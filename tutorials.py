@@ -21,7 +21,10 @@ Names:""".format(
 
 prompt = generate_prompt('racoon')
 
-response = openai.Completion.create(model="text-davinci-003",prompt=prompt,temperature=0.6)
+response = openai.Completion.create(model="text-davinci-003",
+                                    prompt=prompt,
+                                    max_tokens = 200,
+                                    temperature=0.6)
 
 
 #response = openai.Completion.create(model="text-davinci-003",temperature=0.6)

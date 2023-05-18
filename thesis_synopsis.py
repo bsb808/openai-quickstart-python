@@ -90,13 +90,18 @@ for ii in range(len(records)):
 ssumm = ''
 for record in records:
     ssumm += record.summary
+
 prompt = 'Generate a list of between two and four categories that summarize the following engineering research projects.  The research projects are described in the following paragraphs: \n\n'+ssumm
+
+prompt = 'Summarize the engineering topics described in the text below.  The summary should be a list of the five most important technology categories.  The list should be in outline format: \n\n' + ssumm 
+
+#to summarze the engineering projects described in the paragraphs below.  The list  should be generated in bullet point format: \n\n'+ssumm
 
 rsumm= openai.Completion.create(model = model,
                                 prompt = prompt,
                                 max_tokens = 400,
-                                temperature=0.6)
-
+                                temperature=0.3)
+#print(rsumm.choices[0].text)
 
 outf = 'synopsis.md'
 print('Writing output to <%s>'%outf)
@@ -104,19 +109,26 @@ f = open(outf,'w')
 now = datetime.now()
 f.write("""# MAE Thesis Synopsis
 
-Generated with <%s> on %s. \n"""%(model, now.strftime('%d %b %Y %H:%M:%S')))
+Generated summary of %d theses with the ``%s`` model on %s. \n"""%(len(records), model, now.strftime('%d %b %Y %H:%M:%S')))
 
-f.write(rsumm.choices[0].text)
+f.write("\nEach abstract is summarized by a single sentence and two potential defense applications.\n")
+
+f.write("Overall synopsis of top categories this quarter.\n")
+f.write(rsumm.choices[0].text + '\n')
 
 # Write categoties
 
 for c in categories:
-    f.write("## " + c + "\n\n")
+    f.write("\n\n## " + c + "\n")
+    cnt = 0
     for record in records:
         if record.category.find(c) > 0:
-            f.write("### " + record.name + "\n")
+            f.write("\n\n### " + record.name + "")
             f.write(record.summary)
             f.write(record.applications)
+            cnt += 1
+    if cnt < 1:
+        f.write('\n--\n')
 
 
 f.close()
